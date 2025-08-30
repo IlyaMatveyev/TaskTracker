@@ -1,0 +1,35 @@
+#version: '3.8'
+
+services:
+  webapi:
+    build: 
+      context: .
+      dockerfile: src/TaskTracker.API/Dockerfile
+    ports:
+      - "5000:8080"
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings:TaskTrackerDbContext=Host=postgres;Port=5432;Database=TaskTrackerDb;Username=postgres;Password=1234
+    depends_on: 
+      postgres: 
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: TaskTrackerDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d TaskTrackerDb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

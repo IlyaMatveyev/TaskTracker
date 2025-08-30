@@ -5,17 +5,19 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
 
 
 # Этот этап используется для сборки проекта службы
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["TaskTracker.API/TaskTracker.API.csproj", "TaskTracker.API/"]
-RUN dotnet restore "./TaskTracker.API/TaskTracker.API.csproj"
+COPY ["src/TaskTracker.API/TaskTracker.API.csproj", "src/TaskTracker.API/"]
+COPY ["src/TaskTracker.Infrastructure/TaskTracker.Infrastructure.csproj", "src/TaskTracker.Infrastructure/"]
+COPY ["src/TaskTracker.Application/TaskTracker.Application.csproj", "src/TaskTracker.Application/"]
+COPY ["src/TaskTracker.Domain/TaskTracker.Domain.csproj", "src/TaskTracker.Domain/"]
+RUN dotnet restore "./src/TaskTracker.API/TaskTracker.API.csproj"
 COPY . .
-WORKDIR "/src/TaskTracker.API"
+WORKDIR "/src/src/TaskTracker.API"
 RUN dotnet build "./TaskTracker.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Этот этап используется для публикации проекта службы, который будет скопирован на последний этап

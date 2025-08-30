@@ -1,0 +1,12 @@
+﻿namespace TaskTracker.Infrastructure.Entities
+{
+	public class ProjectEntity
+	{
+		public Guid Id { get; set; }
+		public string Name { get; set; }
+		public string Description { get; set; }
+		public DateTime CreatedAt { get; set; }
+
+		//TODO: Добавить список Tasks.
+	}
+}

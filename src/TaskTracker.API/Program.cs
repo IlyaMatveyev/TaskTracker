@@ -1,22 +1,40 @@
+using Microsoft.EntityFrameworkCore;
+using TaskTracker.Application.Interfaces;
+using TaskTracker.Application.Services;
+using TaskTracker.Infrastructure.HostedServices;
+using TaskTracker.Infrastructure.PostgreSqlDb;
+using TaskTracker.Infrastructure.Repositories;
 
 namespace TaskTracker.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var app = builder.Build();
+            builder.Services.AddDbContext<TaskTrackerDbContext>(
+                options =>
+                {
+                    options.UseNpgsql(
+                        builder.Configuration.GetConnectionString(nameof(TaskTrackerDbContext)), 
+                        b => b.MigrationsAssembly(typeof(TaskTrackerDbContext).Assembly.FullName)
+                    );
+                }
+            );
 
-            // Configure the HTTP request pipeline.
+            builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+			builder.Services.AddScoped<IProjectService, ProjectService>();
+
+            // Инициализатор базы данных.
+            builder.Services.AddHostedService<DatabaseInitializationService>();
+
+			var app = builder.Build();
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -30,7 +48,7 @@ namespace TaskTracker.API
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }
