@@ -32,6 +32,33 @@ namespace TaskTracker.Infrastructure.Repositories
 			return projectList;
 		}
 
+		public async Task<Project> GetById(Guid projectId)
+		{
+			var projectEntity = await _dbContext.Projects
+				.Include(p => p.TaskEntities)
+				.FirstOrDefaultAsync(p => p.Id == projectId);
+
+			// TODO: Заменить на нормальный маппинг
+			var project = new Project()
+			{
+				Id = projectEntity.Id,
+				Name = projectEntity.Name,
+				Description = projectEntity.Description,
+				CreatedAt = projectEntity.CreatedAt,
+				Tasks = projectEntity.TaskEntities.Select(t => new Task()
+					{
+						Id = t.Id,
+						Title = t.Title,
+						Description = t.Description,
+						IsCompleted = t.IsCompleted,
+						CreatedAt = t.CreatedAt,
+						UpdatedAt = t.UpdatedAt,
+						ProjectId = t.ProjectEntityId
+					}).ToList()
+			};
+
+			return project;
+		}
 
 		public async Task<Guid> Create(Project project)
 		{
