@@ -2,6 +2,8 @@
 using TaskTracker.Domain.Models;
 using TaskTracker.Infrastructure.PostgreSqlDb;
 using TaskTracker.Application.Interfaces;
+using TaskTracker.Application.DTOs.Common;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TaskTracker.Infrastructure.Repositories
 {
@@ -13,23 +15,34 @@ namespace TaskTracker.Infrastructure.Repositories
 			_dbContext = dbContext;
 		}
 
-		public async Task<List<Project>> GetAll()
+		public async Task<PagedResponse<Project>> GetAll(PaginationParams paginationParams)
 		{
 			var projectEntityList = await _dbContext.Projects
 				.AsNoTracking()
-				.ToListAsync();
+				.Skip((paginationParams.Page - 1) * paginationParams.PageSize)
+			.Take(paginationParams.PageSize)
+			.ToListAsync();
 
-			var projectList = projectEntityList
+			var totalCount = await _dbContext.Projects.CountAsync();
+
+			var pagedResponse = new PagedResponse<Project>()
+			{
+				Items = projectEntityList
 				.Select(p => new Project
 				{
 					Id = p.Id,
 					Name = p.Name,
 					Description = p.Description,
 					CreatedAt = p.CreatedAt
-					//TODO: Tasks
-				}).ToList();
+				}).ToList(),
 
-			return projectList;
+				Page = paginationParams.Page,
+				PageSize = paginationParams.PageSize,
+				TotalCount = totalCount
+			};
+
+
+			return pagedResponse;
 		}
 
 		public async Task<Project> GetById(Guid projectId)

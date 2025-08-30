@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.DTOs;
+using TaskTracker.Application.DTOs.Common;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Infrastructure.Entities;
 
@@ -17,11 +18,15 @@ namespace TaskTracker.API.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<List<ProjectResponse>>> GetAll()
+		public async Task<ActionResult<PagedResponse<ProjectResponse>>> GetAll(
+			[FromQuery] int page = 1, 
+			[FromQuery] int pageSize = 10)
 		{
-			var projectResponseList = await _projectService.GetAll();
+			var paginationParams = new PaginationParams(page, pageSize);
 
-			return Ok(projectResponseList);
+			var pagedProjectResponse = await _projectService.GetAll(paginationParams);
+
+			return Ok(pagedProjectResponse);
 		}
 
 		[HttpGet("/{projectId:guid}")]

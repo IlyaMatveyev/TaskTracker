@@ -1,4 +1,5 @@
 ﻿using TaskTracker.Application.DTOs;
+using TaskTracker.Application.DTOs.Common;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Domain.Models;
 
@@ -25,20 +26,25 @@ namespace TaskTracker.Application.Services
 			return _projectRepository.Create(project);
 		}
 
-		public async Task<List<ProjectResponse>> GetAll()
+		public async Task<PagedResponse<ProjectResponse>> GetAll(PaginationParams paginationParams)
 		{
-			var projectList = await _projectRepository.GetAll();
+			var pagedProject = await _projectRepository.GetAll(paginationParams);
 
-			// маппинг
-			var projectResponseList = projectList.Select(p => new ProjectResponse
-			(
-				p.Id,
-				p.Name,
-				p.Description,
-				p.CreatedAt
-			)).ToList();
+			var pagedProjectResponse = new PagedResponse<ProjectResponse>()
+			{
+				Items = pagedProject.Items.Select(p => new ProjectResponse
+				(
+					p.Id,
+					p.Name,
+					p.Description,
+					p.CreatedAt
+				)).ToList(),
+				Page = pagedProject.Page,
+				PageSize = pagedProject.PageSize,
+				TotalCount = pagedProject.TotalCount
+			};
 
-			return projectResponseList;
+			return pagedProjectResponse;
 		}
 
 		public async Task<Project> GetById(Guid projectId)
