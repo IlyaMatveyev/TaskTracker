@@ -12,11 +12,12 @@ namespace TaskTracker.Infrastructure.PostgreSqlDb
 		}
 
 		public DbSet<ProjectEntity> Projects { get; set; }
+		public DbSet<TaskEntity> Tasks { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.ApplyConfiguration(new ProjectConfiguration());
-			//TODO: Далее тут применить конфигурацию Task.
+			modelBuilder.ApplyConfiguration(new TaskConfiguration());
 
 			base.OnModelCreating(modelBuilder);
 		}
