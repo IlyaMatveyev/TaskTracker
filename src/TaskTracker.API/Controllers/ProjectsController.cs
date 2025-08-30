@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.DTOs;
 using TaskTracker.Application.Interfaces;
+using TaskTracker.Infrastructure.Entities;
 
 namespace TaskTracker.API.Controllers
 {
@@ -21,6 +22,24 @@ namespace TaskTracker.API.Controllers
 			var projectResponseList = await _projectService.GetAll();
 
 			return Ok(projectResponseList);
+		}
+
+		[HttpGet("/{projectId:guid}")]
+		public async Task<ActionResult<ProjectWithTasksResponse>> GetById(Guid projectId)
+		{
+			var project = await _projectService.GetById(projectId);
+
+			// mapping project -> ProjectWithTasksResponse
+			var projectWithTasksResponse = new ProjectWithTasksResponse
+			(
+				project.Id,
+				project.Name,
+				project.Description,
+				project.CreatedAt,
+				project.Tasks
+			);
+
+			return Ok(projectWithTasksResponse);
 		}
 
 		[HttpPost]
