@@ -7,5 +7,6 @@ namespace TaskTracker.Application.Interfaces
 	{
 		Task<List<ProjectResponse>> GetAll();
 		Task<Guid> Create(ProjectCreateRequest projectRequest);
+		Task<int> Delete(Guid projectId);
 	}
 }
