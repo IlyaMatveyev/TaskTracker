@@ -52,5 +52,16 @@ namespace TaskTracker.Application.Services
 		{
 			return await _projectRepository.Delete(projectId);
 		}
+
+		public async Task<Guid> Update(Guid projectId, ProjectUpdateRequest projectUpdate)
+		{
+			var project = new Project()
+			{
+				Name = projectUpdate.Name,
+				Description = projectUpdate.Description,
+			};
+
+			return await _projectRepository.Update(projectId, project);
+		}
 	}
 }

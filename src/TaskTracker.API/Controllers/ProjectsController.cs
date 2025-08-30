@@ -53,5 +53,13 @@ namespace TaskTracker.API.Controllers
 		{
 			return await _projectService.Delete(projectId);
 		}
+
+		[HttpPut("/{projectId:guid}")]
+		public async Task<ActionResult<Guid>> Update(
+			[FromRoute] Guid projectId, 
+			[FromBody] ProjectUpdateRequest projectUpdate)
+		{
+			return await _projectService.Update(projectId, projectUpdate);
+		}
 	}
 }

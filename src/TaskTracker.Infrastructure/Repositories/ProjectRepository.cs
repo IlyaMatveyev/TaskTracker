@@ -91,8 +91,6 @@ namespace TaskTracker.Infrastructure.Repositories
 				.ExecuteUpdateAsync(setPropCalls => setPropCalls
 					.SetProperty(p => p.Name, p => project.Name)
 					.SetProperty(p => p.Description, p => project.Description)
-					.SetProperty(p => p.CreatedAt, p => project.CreatedAt)
-					//TODO: Tasks
 					);
 
 			return id;
