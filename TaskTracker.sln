@@ -24,6 +24,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Infrastructure"
 		{F67E2A2B-2909-4BE8-A2A4-26004AA8BD3E} = {F67E2A2B-2909-4BE8-A2A4-26004AA8BD3E}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{E222D0AD-9DA2-4F95-852E-CC62EC34CB7B}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
