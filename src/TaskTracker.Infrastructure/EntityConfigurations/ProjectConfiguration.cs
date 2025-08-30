@@ -21,6 +21,11 @@ namespace TaskTracker.Infrastructure.EntityConfigurations
 
 			builder.Property(p => p.CreatedAt)
 				.IsRequired();
+
+			builder.HasMany(p => p.TaskEntities)
+				.WithOne(t => t.ProjectEntity)
+				.HasForeignKey(t => t.ProjectEntityId)
+				.OnDelete(DeleteBehavior.Cascade);
 		}
 	}
 }
