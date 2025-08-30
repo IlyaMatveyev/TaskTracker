@@ -5,7 +5,7 @@ using TaskTracker.Application.Interfaces;
 namespace TaskTracker.API.Controllers
 {
 	[ApiController]
-	[Route("api/[controller]")]
+	[Route("api/projects")]
 	public class ProjectsController : ControllerBase
 	{
 		private readonly IProjectService _projectService;
@@ -27,6 +27,12 @@ namespace TaskTracker.API.Controllers
 		public async Task<ActionResult<Guid>> Create(ProjectCreateRequest projectCreate)
 		{
 			return await _projectService.Create(projectCreate);
+		}
+
+		[HttpDelete("/{projectId:guid}")]
+		public async Task<ActionResult<int>> Delete([FromRoute] Guid projectId)
+		{
+			return await _projectService.Delete(projectId);
 		}
 	}
 }

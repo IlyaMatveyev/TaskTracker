@@ -40,5 +40,10 @@ namespace TaskTracker.Application.Services
 
 			return projectResponseList;
 		}
+
+		public async Task<int> Delete(Guid projectId)
+		{
+			return await _projectRepository.Delete(projectId);
+		}
 	}
 }
