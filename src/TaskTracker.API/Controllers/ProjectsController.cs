@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MapsterMapper;
+using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.DTOs;
 using TaskTracker.Application.DTOs.Common;
 using TaskTracker.Application.Interfaces;
-using TaskTracker.Infrastructure.Entities;
 
 namespace TaskTracker.API.Controllers
 {
@@ -11,10 +11,14 @@ namespace TaskTracker.API.Controllers
 	public class ProjectsController : ControllerBase
 	{
 		private readonly IProjectService _projectService;
+		private readonly IMapper _mapper;
 
-		public ProjectsController(IProjectService projectService)
+		public ProjectsController(
+			IProjectService projectService, 
+			IMapper mapper)
 		{
 			_projectService = projectService;
+			_mapper = mapper;
 		}
 
 		[HttpGet]
@@ -32,19 +36,7 @@ namespace TaskTracker.API.Controllers
 		[HttpGet("/{projectId:guid}")]
 		public async Task<ActionResult<ProjectWithTasksResponse>> GetById(Guid projectId)
 		{
-			var project = await _projectService.GetById(projectId);
-
-			// mapping project -> ProjectWithTasksResponse
-			var projectWithTasksResponse = new ProjectWithTasksResponse
-			(
-				project.Id,
-				project.Name,
-				project.Description,
-				project.CreatedAt,
-				project.Tasks
-			);
-
-			return Ok(projectWithTasksResponse);
+			return await _projectService.GetById(projectId);
 		}
 
 		[HttpPost]
