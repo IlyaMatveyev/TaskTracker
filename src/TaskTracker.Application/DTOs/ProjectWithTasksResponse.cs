@@ -5,5 +5,5 @@
 		string Name,
 		string Description,
 		DateTime CreatedAt,
-		List<Task> Tasks);
+		List<TaskResponse> Tasks);
 }
