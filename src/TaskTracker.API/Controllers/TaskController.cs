@@ -26,5 +26,13 @@ namespace TaskTracker.API.Controllers
 		{
 			return await _taskService.GetById(taskId);
 		}
+
+		[HttpGet]
+		public async Task<ActionResult<List<TaskResponse>>> GetAll(
+			[FromQuery] bool? isCompleted = null, 
+			[FromQuery] Guid? projectId = null)
+		{
+			return await _taskService.GetAll(isCompleted, projectId);
+		}
 	}
 }
