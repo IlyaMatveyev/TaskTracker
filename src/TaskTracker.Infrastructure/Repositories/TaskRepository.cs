@@ -72,5 +72,18 @@ namespace TaskTracker.Infrastructure.Repositories
 
 			return deletedRowsCount;
 		}
+
+		public async Task<Guid> Update(Guid taskId, Task taskUpdate)
+		{
+			var updatedRowsCount = await _dbContext.Tasks
+				.Where(t => t.Id == taskId)
+				.ExecuteUpdateAsync(s => s
+				.SetProperty(t => t.Title, t => taskUpdate.Title)
+				.SetProperty(t => t.Description, t => taskUpdate.Description)
+				.SetProperty(t => t.IsCompleted, t => taskUpdate.IsCompleted)
+				.SetProperty(t => t.ProjectEntityId, t => taskUpdate.ProjectId));
+
+			return taskId;
+		}
 	}
 }

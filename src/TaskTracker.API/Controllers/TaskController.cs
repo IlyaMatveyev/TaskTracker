@@ -40,5 +40,13 @@ namespace TaskTracker.API.Controllers
 		{
 			return await _taskService.Delete(taskId);
 		}
+
+		[HttpPut("{taskId:guid}")]
+		public async Task<ActionResult<Guid>> Update(
+			[FromRoute] Guid taskId, 
+			[FromBody] TaskUpdateRequest taskUpdate)
+		{
+			return await _taskService.Update(taskId, taskUpdate);
+		}
 	}
 }
