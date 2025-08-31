@@ -1,4 +1,5 @@
-﻿using TaskTracker.Application.DTOs;
+﻿using System.Web.Http;
+using TaskTracker.Application.DTOs;
 
 namespace TaskTracker.Application.Interfaces
 {
@@ -8,5 +9,6 @@ namespace TaskTracker.Application.Interfaces
 		Task<TaskResponse> GetById(Guid taskId);
 		Task<List<TaskResponse>> GetAll(bool? isCompleted, Guid? projectId);
 		Task<int> Delete(Guid taskId);
+		Task<Guid> Update(Guid taskId, TaskUpdateRequest taskUpdate);
 	}
 }
