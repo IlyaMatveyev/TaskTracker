@@ -63,5 +63,14 @@ namespace TaskTracker.Infrastructure.Repositories
 
 			return _mapper.Map<List<Task>>(taskEntityList);
 		}
+
+		public async Task<int> Delete(Guid taskId)
+		{
+			var deletedRowsCount = await _dbContext.Tasks
+				.Where(t => t.Id == taskId)
+				.ExecuteDeleteAsync();
+
+			return deletedRowsCount;
+		}
 	}
 }

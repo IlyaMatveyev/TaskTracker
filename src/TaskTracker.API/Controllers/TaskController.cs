@@ -34,5 +34,11 @@ namespace TaskTracker.API.Controllers
 		{
 			return await _taskService.GetAll(isCompleted, projectId);
 		}
+
+		[HttpDelete]
+		public async Task<ActionResult<int>> Delete(Guid taskId)
+		{
+			return await _taskService.Delete(taskId);
+		}
 	}
 }

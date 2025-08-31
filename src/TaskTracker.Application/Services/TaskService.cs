@@ -36,5 +36,10 @@ namespace TaskTracker.Application.Services
 
 			return _mapper.Map<List<TaskResponse>>(taskList);
 		}
+
+		public async Task<int> Delete(Guid taskId)
+		{
+			return await _taskRepository.Delete(taskId);
+		}
 	}
 }
