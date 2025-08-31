@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TaskTracker.API.Extensions;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.Services;
 using TaskTracker.Infrastructure.HostedServices;
@@ -32,6 +33,9 @@ namespace TaskTracker.API
 
             // Инициализатор базы данных.
             builder.Services.AddHostedService<DatabaseInitializationService>();
+
+            // Добавление маппинга.
+            builder.Services.RegisterMapsterConfiguration();
 
 			var app = builder.Build();
 
