@@ -1,4 +1,5 @@
 ﻿using MapsterMapper;
+using Microsoft.EntityFrameworkCore;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Infrastructure.Entities;
 using TaskTracker.Infrastructure.PostgreSqlDb;
@@ -26,6 +27,22 @@ namespace TaskTracker.Infrastructure.Repositories
 			await _dbContext.SaveChangesAsync();
 
 			return taskEntity.Id;
+		}
+
+		public async Task<Task> GetById(Guid taskId)
+		{
+			var taskEntity = await _dbContext.Tasks
+				.AsNoTracking()
+				.FirstOrDefaultAsync(t => t.Id == taskId);
+
+			if (taskEntity == null)
+			{
+				throw new KeyNotFoundException("Task not found.");
+			}
+
+			var task = _mapper.Map<Task>(taskEntity);
+
+			return task;
 		}
 	}
 }

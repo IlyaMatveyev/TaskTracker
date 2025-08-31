@@ -16,9 +16,15 @@ namespace TaskTracker.API.Controllers
 		}
 
 		[HttpPost]
-		public async Task<Guid> Create(TaskCreateRequest taskCreate)
+		public async Task<ActionResult<Guid>> Create(TaskCreateRequest taskCreate)
 		{
 			return await _taskService.Create(taskCreate);
+		}
+
+		[HttpGet("{taskId:guid}")]
+		public async Task<ActionResult<TaskResponse>> GetById([FromRoute] Guid taskId)
+		{
+			return await _taskService.GetById(taskId);
 		}
 	}
 }
