@@ -33,7 +33,7 @@ namespace TaskTracker.API.Controllers
 			return Ok(pagedProjectResponse);
 		}
 
-		[HttpGet("/{projectId:guid}")]
+		[HttpGet("{projectId:guid}")]
 		public async Task<ActionResult<ProjectWithTasksResponse>> GetById(Guid projectId)
 		{
 			return await _projectService.GetById(projectId);
@@ -45,13 +45,13 @@ namespace TaskTracker.API.Controllers
 			return await _projectService.Create(projectCreate);
 		}
 
-		[HttpDelete("/{projectId:guid}")]
+		[HttpDelete("{projectId:guid}")]
 		public async Task<ActionResult<int>> Delete([FromRoute] Guid projectId)
 		{
 			return await _projectService.Delete(projectId);
 		}
 
-		[HttpPut("/{projectId:guid}")]
+		[HttpPut("{projectId:guid}")]
 		public async Task<ActionResult<Guid>> Update(
 			[FromRoute] Guid projectId, 
 			[FromBody] ProjectUpdateRequest projectUpdate)
