@@ -20,5 +20,14 @@ namespace TaskTracker.Application.Services
 
 			return await _taskRepository.Create(task);
 		}
+
+		public async Task<TaskResponse> GetById(Guid taskId)
+		{
+			var task = await _taskRepository.GetById(taskId);
+
+			var taskResponse = _mapper.Map<TaskResponse>(task);
+
+			return taskResponse;
+		}
 	}
 }

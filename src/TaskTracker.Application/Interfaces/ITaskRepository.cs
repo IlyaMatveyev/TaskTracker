@@ -3,5 +3,6 @@
 	public interface ITaskRepository
 	{
 		Task<Guid> Create(Task task);
+		Task<Task> GetById(Guid taskId);
 	}
 }
