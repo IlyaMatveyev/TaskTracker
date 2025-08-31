@@ -1,4 +1,6 @@
-﻿using TaskTracker.Application.DTOs;
+﻿using Mapster;
+using MapsterMapper;
+using TaskTracker.Application.DTOs;
 using TaskTracker.Application.DTOs.Common;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Domain.Models;
@@ -8,20 +10,18 @@ namespace TaskTracker.Application.Services
 	public class ProjectService : IProjectService
 	{
 		private readonly IProjectRepository _projectRepository;
-		public ProjectService(IProjectRepository projectRepository)
+		private readonly IMapper _mapper;
+		public ProjectService(
+			IProjectRepository projectRepository,
+			IMapper mapper)
 		{
 			_projectRepository = projectRepository;
+			_mapper = mapper;
 		}
 
 		public Task<Guid> Create(ProjectCreateRequest projectRequest)
 		{
-			var project = new Project()
-			{
-				Id = Guid.NewGuid(),
-				Name = projectRequest.Name,
-				Description = projectRequest.Description,
-				CreatedAt = DateTime.UtcNow
-			};
+			var project = _mapper.Map<Project>(projectRequest);
 
 			return _projectRepository.Create(project);
 		}
@@ -32,13 +32,7 @@ namespace TaskTracker.Application.Services
 
 			var pagedProjectResponse = new PagedResponse<ProjectResponse>()
 			{
-				Items = pagedProject.Items.Select(p => new ProjectResponse
-				(
-					p.Id,
-					p.Name,
-					p.Description,
-					p.CreatedAt
-				)).ToList(),
+				Items = pagedProject.Items.Adapt<List<ProjectResponse>>(),
 				Page = pagedProject.Page,
 				PageSize = pagedProject.PageSize,
 				TotalCount = pagedProject.TotalCount
@@ -47,11 +41,13 @@ namespace TaskTracker.Application.Services
 			return pagedProjectResponse;
 		}
 
-		public async Task<Project> GetById(Guid projectId)
+		public async Task<ProjectWithTasksResponse> GetById(Guid projectId)
 		{
 			var project = await _projectRepository.GetById(projectId);
 
-			return project;
+			var projectWithTasksResponse = _mapper.Map<ProjectWithTasksResponse>(project);
+
+			return projectWithTasksResponse;
 		}
 
 		public async Task<int> Delete(Guid projectId)
@@ -61,11 +57,7 @@ namespace TaskTracker.Application.Services
 
 		public async Task<Guid> Update(Guid projectId, ProjectUpdateRequest projectUpdate)
 		{
-			var project = new Project()
-			{
-				Name = projectUpdate.Name,
-				Description = projectUpdate.Description,
-			};
+			var project = _mapper.Map<Project>(projectUpdate);
 
 			return await _projectRepository.Update(projectId, project);
 		}

@@ -3,44 +3,45 @@ using TaskTracker.Domain.Models;
 using TaskTracker.Infrastructure.PostgreSqlDb;
 using TaskTracker.Application.Interfaces;
 using TaskTracker.Application.DTOs.Common;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using MapsterMapper;
+using Mapster;
+using TaskTracker.Infrastructure.Entities;
 
 namespace TaskTracker.Infrastructure.Repositories
 {
 	public class ProjectRepository : IProjectRepository
 	{
 		private readonly TaskTrackerDbContext _dbContext;
-		public ProjectRepository(TaskTrackerDbContext dbContext)
+		private readonly IMapper _mapper;
+
+		public ProjectRepository(
+			TaskTrackerDbContext dbContext, 
+			IMapper mapper)
 		{
 			_dbContext = dbContext;
+			_mapper = mapper;
 		}
 
 		public async Task<PagedResponse<Project>> GetAll(PaginationParams paginationParams)
 		{
-			var projectEntityList = await _dbContext.Projects
+			var query = _dbContext.Projects
 				.AsNoTracking()
-				.Skip((paginationParams.Page - 1) * paginationParams.PageSize)
-			.Take(paginationParams.PageSize)
-			.ToListAsync();
+				.OrderBy(p => p.CreatedAt);
 
-			var totalCount = await _dbContext.Projects.CountAsync();
+			var totalCount = await query.CountAsync();
+
+			var projectEntityList = await query
+				.Skip((paginationParams.Page - 1) * paginationParams.PageSize)
+				.Take(paginationParams.PageSize)
+				.ToListAsync();
 
 			var pagedResponse = new PagedResponse<Project>()
 			{
-				Items = projectEntityList
-				.Select(p => new Project
-				{
-					Id = p.Id,
-					Name = p.Name,
-					Description = p.Description,
-					CreatedAt = p.CreatedAt
-				}).ToList(),
-
+				Items = projectEntityList.Adapt<List<Project>>(),
 				Page = paginationParams.Page,
 				PageSize = paginationParams.PageSize,
 				TotalCount = totalCount
 			};
-
 
 			return pagedResponse;
 		}
@@ -51,37 +52,21 @@ namespace TaskTracker.Infrastructure.Repositories
 				.Include(p => p.TaskEntities)
 				.FirstOrDefaultAsync(p => p.Id == projectId);
 
-			// TODO: Заменить на нормальный маппинг
-			var project = new Project()
+			if (projectEntity == null)
 			{
-				Id = projectEntity.Id,
-				Name = projectEntity.Name,
-				Description = projectEntity.Description,
-				CreatedAt = projectEntity.CreatedAt,
-				Tasks = projectEntity.TaskEntities.Select(t => new Task()
-					{
-						Id = t.Id,
-						Title = t.Title,
-						Description = t.Description,
-						IsCompleted = t.IsCompleted,
-						CreatedAt = t.CreatedAt,
-						UpdatedAt = t.UpdatedAt,
-						ProjectId = t.ProjectEntityId
-					}).ToList()
-			};
+				throw new KeyNotFoundException("Project not found.");
+			}
+
+			var project = _mapper.Map<Project>(projectEntity);
 
 			return project;
 		}
 
 		public async Task<Guid> Create(Project project)
 		{
-			await _dbContext.Projects.AddAsync(new()
-			{
-				Id = project.Id,
-				Name = project.Name,
-				Description = project.Description,
-				CreatedAt = project.CreatedAt
-			});
+			var projectEntity = _mapper.Map<ProjectEntity>(project);
+
+			await _dbContext.Projects.AddAsync(projectEntity);
 
 			await _dbContext.SaveChangesAsync();
 
