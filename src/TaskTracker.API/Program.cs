@@ -5,6 +5,7 @@ using TaskTracker.Application.Services;
 using TaskTracker.Infrastructure.HostedServices;
 using TaskTracker.Infrastructure.PostgreSqlDb;
 using TaskTracker.Infrastructure.Repositories;
+using Serilog;
 
 namespace TaskTracker.API
 {
@@ -14,7 +15,14 @@ namespace TaskTracker.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllers();
+			// Конфигурирование логгера.
+			Log.Logger = new LoggerConfiguration()
+				.ReadFrom.Configuration(builder.Configuration)
+				.CreateLogger();
+
+            builder.Host.UseSerilog();
+
+			builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
