@@ -6,5 +6,6 @@ namespace TaskTracker.Application.Interfaces
 	{
 		Task<Guid> Create(TaskCreateRequest taskCreate);
 		Task<TaskResponse> GetById(Guid taskId);
+		Task<List<TaskResponse>> GetAll(bool? isCompleted, Guid? projectId);
 	}
 }

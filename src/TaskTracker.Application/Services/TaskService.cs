@@ -29,5 +29,12 @@ namespace TaskTracker.Application.Services
 
 			return taskResponse;
 		}
+
+		public async Task<List<TaskResponse>> GetAll(bool? isCompleted, Guid? projectId)
+		{
+			var taskList = await _taskRepository.GetAll(isCompleted, projectId);
+
+			return _mapper.Map<List<TaskResponse>>(taskList);
+		}
 	}
 }

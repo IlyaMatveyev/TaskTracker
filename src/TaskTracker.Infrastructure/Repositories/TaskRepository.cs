@@ -44,5 +44,24 @@ namespace TaskTracker.Infrastructure.Repositories
 
 			return task;
 		}
+
+		public async Task<List<Task>> GetAll(bool? isCompleted, Guid? projectId)
+		{
+			var query = _dbContext.Tasks.AsQueryable();
+
+			if (isCompleted.HasValue)
+			{
+				query = query.Where(t => t.IsCompleted == isCompleted.Value);
+			}
+
+			if (projectId.HasValue)
+			{
+				query = query.Where(t => t.ProjectEntityId == projectId.Value);
+			}
+
+			var taskEntityList = await query.ToListAsync();
+
+			return _mapper.Map<List<Task>>(taskEntityList);
+		}
 	}
 }
