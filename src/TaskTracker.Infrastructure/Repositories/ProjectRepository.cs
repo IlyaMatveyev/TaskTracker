@@ -2,6 +2,8 @@
 using TaskTracker.Domain.Models;
 using TaskTracker.Infrastructure.PostgreSqlDb;
 using TaskTracker.Application.Interfaces;
+using TaskTracker.Application.DTOs.Common;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TaskTracker.Infrastructure.Repositories
 {
@@ -13,25 +15,63 @@ namespace TaskTracker.Infrastructure.Repositories
 			_dbContext = dbContext;
 		}
 
-		public async Task<List<Project>> GetAll()
+		public async Task<PagedResponse<Project>> GetAll(PaginationParams paginationParams)
 		{
 			var projectEntityList = await _dbContext.Projects
 				.AsNoTracking()
-				.ToListAsync();
+				.Skip((paginationParams.Page - 1) * paginationParams.PageSize)
+			.Take(paginationParams.PageSize)
+			.ToListAsync();
 
-			var projectList = projectEntityList
+			var totalCount = await _dbContext.Projects.CountAsync();
+
+			var pagedResponse = new PagedResponse<Project>()
+			{
+				Items = projectEntityList
 				.Select(p => new Project
 				{
 					Id = p.Id,
 					Name = p.Name,
 					Description = p.Description,
 					CreatedAt = p.CreatedAt
-					//TODO: Tasks
-				}).ToList();
+				}).ToList(),
 
-			return projectList;
+				Page = paginationParams.Page,
+				PageSize = paginationParams.PageSize,
+				TotalCount = totalCount
+			};
+
+
+			return pagedResponse;
 		}
 
+		public async Task<Project> GetById(Guid projectId)
+		{
+			var projectEntity = await _dbContext.Projects
+				.Include(p => p.TaskEntities)
+				.FirstOrDefaultAsync(p => p.Id == projectId);
+
+			// TODO: Заменить на нормальный маппинг
+			var project = new Project()
+			{
+				Id = projectEntity.Id,
+				Name = projectEntity.Name,
+				Description = projectEntity.Description,
+				CreatedAt = projectEntity.CreatedAt,
+				Tasks = projectEntity.TaskEntities.Select(t => new Task()
+					{
+						Id = t.Id,
+						Title = t.Title,
+						Description = t.Description,
+						IsCompleted = t.IsCompleted,
+						CreatedAt = t.CreatedAt,
+						UpdatedAt = t.UpdatedAt,
+						ProjectId = t.ProjectEntityId
+					}).ToList()
+			};
+
+			return project;
+		}
 
 		public async Task<Guid> Create(Project project)
 		{
@@ -64,8 +104,6 @@ namespace TaskTracker.Infrastructure.Repositories
 				.ExecuteUpdateAsync(setPropCalls => setPropCalls
 					.SetProperty(p => p.Name, p => project.Name)
 					.SetProperty(p => p.Description, p => project.Description)
-					.SetProperty(p => p.CreatedAt, p => project.CreatedAt)
-					//TODO: Tasks
 					);
 
 			return id;

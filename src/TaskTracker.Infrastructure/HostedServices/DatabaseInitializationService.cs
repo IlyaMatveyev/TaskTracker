@@ -19,7 +19,7 @@ namespace TaskTracker.Infrastructure.HostedServices
 			_logger = logger;
 		}
 
-		public async Task StartAsync(CancellationToken cancellationToken)
+		public async SysTask StartAsync(CancellationToken cancellationToken)
 		{
 			using var scope = _serviceProvider.CreateScope();
 			var context = scope.ServiceProvider.GetRequiredService<TaskTrackerDbContext>();
@@ -38,11 +38,11 @@ namespace TaskTracker.Infrastructure.HostedServices
 			}
 		}
 
-		public Task StopAsync(CancellationToken cancellationToken)
+		public SysTask StopAsync(CancellationToken cancellationToken)
 		{
 			_logger.LogInformation("Database initialization service stopped.");
 			
-			return Task.CompletedTask;
+			return SysTask.CompletedTask;
 		}
 	}
 }
