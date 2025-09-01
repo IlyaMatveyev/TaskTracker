@@ -35,14 +35,18 @@ namespace TaskTracker.API
 
             });
 
-
+            builder.Services.AddScoped<DatabaseSeeder>();
             builder.Services.AddDbContext<TaskTrackerDbContext>(
                 options =>
                 {
                     options.UseNpgsql(
-                        builder.Configuration.GetConnectionString(nameof(TaskTrackerDbContext)), 
+                        builder.Configuration.GetConnectionString(nameof(TaskTrackerDbContext)),
                         b => b.MigrationsAssembly(typeof(TaskTrackerDbContext).Assembly.FullName)
-                    );
+                    )
+                    .UseAsyncSeeding(async (context, hasChanges, cancellationToken) =>
+                    {
+                        await DatabaseSeeder.SeedAsync((TaskTrackerDbContext)context, hasChanges, cancellationToken);
+                    });
                 }
             );
 
