@@ -84,12 +84,17 @@ namespace TaskTracker.Infrastructure.Repositories
 
 		public async Task<Guid> Update(Guid id, Project project)
 		{
-			await _dbContext.Projects
+			var updatedRowsCount = await _dbContext.Projects
 				.Where(p => p.Id == id)
 				.ExecuteUpdateAsync(setPropCalls => setPropCalls
 					.SetProperty(p => p.Name, p => project.Name)
 					.SetProperty(p => p.Description, p => project.Description)
 					);
+
+			if(updatedRowsCount < 1)
+			{
+				throw new KeyNotFoundException("Project not found.");
+			}
 
 			return id;
 		}

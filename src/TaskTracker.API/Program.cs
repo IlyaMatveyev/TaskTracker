@@ -7,6 +7,8 @@ using TaskTracker.Infrastructure.PostgreSqlDb;
 using TaskTracker.Infrastructure.Repositories;
 using Serilog;
 using TaskTracker.API.Exceptions;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 namespace TaskTracker.API
 {
@@ -25,7 +27,14 @@ namespace TaskTracker.API
 
 			builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                // Находим и подключаем xml комментарии.
+                var xmlSwaggerDocFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlSwaggerDocFile));
+
+            });
+
 
             builder.Services.AddDbContext<TaskTrackerDbContext>(
                 options =>
