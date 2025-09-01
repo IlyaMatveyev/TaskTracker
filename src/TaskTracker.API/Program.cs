@@ -51,6 +51,9 @@ namespace TaskTracker.API
             // Регистрация обработчика исключений.
             builder.Services.AddExceptionHandler<ExceptionHandler>();
 
+            // Регистрация валидаторов FluentValidation.
+            builder.Services.RegisterFluentValidationConfig();
+
 			var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
