@@ -63,6 +63,9 @@ namespace TaskTracker.API
             // Регистрация валидаторов FluentValidation.
             builder.Services.RegisterFluentValidationConfig();
 
+            builder.Services.AddMemoryCache();
+            builder.Services.AddScoped<ICacheService, CacheService>();
+
 			var app = builder.Build();
 
             if (app.Environment.IsDevelopment())

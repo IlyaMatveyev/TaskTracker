@@ -13,13 +13,16 @@ namespace TaskTracker.API.Controllers
 	{
 		private readonly ITaskService _taskService;
 		private readonly ILogger<TaskController> _logger;
+		private readonly ICacheService _cacheService;
 
 		public TaskController(
 			ITaskService taskService, 
-			ILogger<TaskController> logger)
+			ILogger<TaskController> logger,
+			ICacheService cacheService)
 		{
 			_taskService = taskService;
 			_logger = logger;
+			_cacheService = cacheService;
 		}
 
 		/// <summary>
@@ -86,7 +89,13 @@ namespace TaskTracker.API.Controllers
 		{
 			_logger.LogInformation("Обращение к методу GetAll.");
 
-			var taskResponseList = await _taskService.GetAll(isCompleted, projectId);
+			var cacheKey = $"tasks_{isCompleted}_{projectId}";
+
+			var taskResponseList = await _cacheService.GetCachedValue(
+				cacheKey,
+				async () => await _taskService.GetAll(isCompleted, projectId),
+				TimeSpan.FromSeconds(60),
+				TimeSpan.FromMinutes(5));
 
 			if(taskResponseList.Count == 0)
 			{

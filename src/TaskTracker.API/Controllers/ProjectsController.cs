@@ -1,5 +1,6 @@
 ﻿using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using TaskTracker.Application.DTOs;
 using TaskTracker.Application.DTOs.Common;
 using TaskTracker.Application.Interfaces;
@@ -15,14 +16,16 @@ namespace TaskTracker.API.Controllers
 	{
 		private readonly IProjectService _projectService;
 		private readonly ILogger<ProjectsController> _logger;
+		private readonly ICacheService _cacheService;
 
 		public ProjectsController(
 			IProjectService projectService, 
-			IMapper mapper, 
-			ILogger<ProjectsController> logger)
+			ILogger<ProjectsController> logger,
+			ICacheService cacheService)
 		{
 			_projectService = projectService;
 			_logger = logger;
+			_cacheService = cacheService;
 		}
 
 		/// <summary>
@@ -46,9 +49,18 @@ namespace TaskTracker.API.Controllers
 		{
 			_logger.LogInformation("Обращение к методу GetAll.");
 
-			var paginationParams = new PaginationParams(page, pageSize);
+			var cacheKey = $"projects_page{page}_pageSize{pageSize}";
 
-			var pagedProjectResponse = await _projectService.GetAll(paginationParams);
+			var pagedProjectResponse = await _cacheService.GetCachedValue(
+				cacheKey,
+				async () =>
+				{
+					var paginationParams = new PaginationParams(page, pageSize);
+					return await _projectService.GetAll(paginationParams);
+				},
+				TimeSpan.FromSeconds(60), 
+				TimeSpan.FromMinutes(5));
+
 
 			if (pagedProjectResponse.Items.Count == 0)
 			{
