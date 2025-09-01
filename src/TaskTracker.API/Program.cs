@@ -6,6 +6,7 @@ using TaskTracker.Infrastructure.HostedServices;
 using TaskTracker.Infrastructure.PostgreSqlDb;
 using TaskTracker.Infrastructure.Repositories;
 using Serilog;
+using TaskTracker.API.Exceptions;
 
 namespace TaskTracker.API
 {
@@ -47,6 +48,9 @@ namespace TaskTracker.API
             // Добавление маппинга.
             builder.Services.RegisterMapsterConfiguration();
 
+            // Регистрация обработчика исключений.
+            builder.Services.AddExceptionHandler<ExceptionHandler>();
+
 			var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -54,6 +58,9 @@ namespace TaskTracker.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            // Встраиваем обработчик исключений в конвейер.
+            app.UseExceptionHandler(_ => { });
 
             app.UseHttpsRedirection();
 
