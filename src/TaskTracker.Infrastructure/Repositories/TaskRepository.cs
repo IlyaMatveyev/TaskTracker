@@ -37,7 +37,7 @@ namespace TaskTracker.Infrastructure.Repositories
 
 			if (taskEntity == null)
 			{
-				throw new KeyNotFoundException("Task not found.");
+				throw new KeyNotFoundException("Task was not found.");
 			}
 
 			var task = _mapper.Map<Task>(taskEntity);
@@ -82,6 +82,11 @@ namespace TaskTracker.Infrastructure.Repositories
 				.SetProperty(t => t.Description, t => taskUpdate.Description)
 				.SetProperty(t => t.IsCompleted, t => taskUpdate.IsCompleted)
 				.SetProperty(t => t.ProjectEntityId, t => taskUpdate.ProjectId));
+
+			if(updatedRowsCount < 1)
+			{
+				throw new KeyNotFoundException("Task was not found.");
+			}
 
 			return taskId;
 		}
