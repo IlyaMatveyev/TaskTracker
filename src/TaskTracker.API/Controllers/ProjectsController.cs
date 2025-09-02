@@ -49,6 +49,11 @@ namespace TaskTracker.API.Controllers
 		{
 			_logger.LogInformation("Обращение к методу GetAll.");
 
+			if (page < 1 || pageSize < 1)
+			{
+				return BadRequest("Page и PageSize должны быть больше 0.");
+			}
+
 			var cacheKey = $"projects_page{page}_pageSize{pageSize}";
 
 			var pagedProjectResponse = await _cacheService.GetCachedValue(
@@ -62,7 +67,8 @@ namespace TaskTracker.API.Controllers
 				TimeSpan.FromMinutes(5));
 
 
-			if (pagedProjectResponse.Items.Count == 0)
+			if (pagedProjectResponse is null || 
+				pagedProjectResponse.Items.Count == 0)
 			{
 				return NoContent();
 			}
