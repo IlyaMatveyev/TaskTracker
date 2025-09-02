@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.12.35521.163
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1D9353E5-2D0F-4E58-988A-3DC9F37C450A}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.API", "src\TaskTracker.API\TaskTracker.API.csproj", "{EA8A3B59-B46D-4D52-966E-8A5DA41EAB3B}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -25,6 +28,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.Infrastructure"
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{E222D0AD-9DA2-4F95-852E-CC62EC34CB7B}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTracker.API.Tests", "xUnitTests\TaskTracker.API.Tests\TaskTracker.API.Tests.csproj", "{71C9F328-9603-4165-8680-155930D1DDC6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{965C0613-FF02-4026-A419-0D8B0A80908A} = {965C0613-FF02-4026-A419-0D8B0A80908A}
+		{EA8A3B59-B46D-4D52-966E-8A5DA41EAB3B} = {EA8A3B59-B46D-4D52-966E-8A5DA41EAB3B}
+		{F67E2A2B-2909-4BE8-A2A4-26004AA8BD3E} = {F67E2A2B-2909-4BE8-A2A4-26004AA8BD3E}
+		{FC6DDA44-B354-435D-AE25-91AA13EE93C9} = {FC6DDA44-B354-435D-AE25-91AA13EE93C9}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xUnitTests", "xUnitTests", "{B26174BD-BA38-434A-8073-9FF1681D14BA}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
@@ -51,6 +67,10 @@ Global
 		{FC6DDA44-B354-435D-AE25-91AA13EE93C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC6DDA44-B354-435D-AE25-91AA13EE93C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC6DDA44-B354-435D-AE25-91AA13EE93C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71C9F328-9603-4165-8680-155930D1DDC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71C9F328-9603-4165-8680-155930D1DDC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71C9F328-9603-4165-8680-155930D1DDC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71C9F328-9603-4165-8680-155930D1DDC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,5 +80,6 @@ Global
 		{F67E2A2B-2909-4BE8-A2A4-26004AA8BD3E} = {1D9353E5-2D0F-4E58-988A-3DC9F37C450A}
 		{965C0613-FF02-4026-A419-0D8B0A80908A} = {1D9353E5-2D0F-4E58-988A-3DC9F37C450A}
 		{FC6DDA44-B354-435D-AE25-91AA13EE93C9} = {1D9353E5-2D0F-4E58-988A-3DC9F37C450A}
+		{71C9F328-9603-4165-8680-155930D1DDC6} = {B26174BD-BA38-434A-8073-9FF1681D14BA}
 	EndGlobalSection
 EndGlobal
