@@ -32,10 +32,12 @@ namespace TaskTracker.API.Controllers
 		/// <returns>Идентификатор созданной задачи.</returns>
 		/// <response code="201">Задача успешно создана.</response>
 		/// <response code="400">Переданы некорректные данные.</response>
+		/// <response code="404">Проект не найден.</response>
 		/// <response code="500">Внутренняя ошибка сервера.</response>
 		[HttpPost]
 		[ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<Guid>> Create([FromBody] TaskCreateRequest taskCreate)
 		{
@@ -111,7 +113,7 @@ namespace TaskTracker.API.Controllers
 		/// <param name="taskId">Идентификатор задачи.</param>
 		/// <response code="204">Задача удалена.</response>
 		/// <response code="500">Внутренняя ошибка сервера.</response>
-		[HttpDelete]
+		[HttpDelete("{taskId:guid}")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> Delete([FromRoute] Guid taskId)

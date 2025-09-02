@@ -23,6 +23,15 @@ namespace TaskTracker.Infrastructure.Repositories
 		{
 			var taskEntity = _mapper.Map<TaskEntity>(task);
 
+			// Проверяем что проект существует
+			var projectExists = await _dbContext.Projects
+				.AnyAsync(p => p.Id == taskEntity.ProjectEntityId);
+
+			if (!projectExists)
+			{
+				throw new KeyNotFoundException($"Project with id {taskEntity.ProjectEntityId} not found");
+			}
+			
 			await _dbContext.Tasks.AddAsync(taskEntity);
 			await _dbContext.SaveChangesAsync();
 
@@ -75,13 +84,22 @@ namespace TaskTracker.Infrastructure.Repositories
 
 		public async Task<Guid> Update(Guid taskId, Task taskUpdate)
 		{
+			var projectExists = await _dbContext.Projects
+				.AnyAsync(p => p.Id == taskUpdate.ProjectId);
+
+			if (!projectExists)
+			{
+				throw new KeyNotFoundException($"Project with id {taskUpdate.ProjectId} not found");
+			}
+
 			var updatedRowsCount = await _dbContext.Tasks
 				.Where(t => t.Id == taskId)
 				.ExecuteUpdateAsync(s => s
 				.SetProperty(t => t.Title, t => taskUpdate.Title)
 				.SetProperty(t => t.Description, t => taskUpdate.Description)
 				.SetProperty(t => t.IsCompleted, t => taskUpdate.IsCompleted)
-				.SetProperty(t => t.ProjectEntityId, t => taskUpdate.ProjectId));
+				.SetProperty(t => t.ProjectEntityId, t => taskUpdate.ProjectId)
+				.SetProperty(t => t.UpdatedAt, t => taskUpdate.UpdatedAt));
 
 			if(updatedRowsCount < 1)
 			{
