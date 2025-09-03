@@ -7,8 +7,9 @@ using TaskTracker.Infrastructure.PostgreSqlDb;
 using TaskTracker.Infrastructure.Repositories;
 using Serilog;
 using TaskTracker.API.Exceptions;
-using Microsoft.OpenApi.Models;
 using System.Reflection;
+using TaskTracker.Infrastructure.Auth;
+using Microsoft.Extensions.Options;
 
 namespace TaskTracker.API
 {
@@ -17,6 +18,11 @@ namespace TaskTracker.API
         public static async SysTask Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Аутентификация
+            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
+            var jwtOptions = builder.Configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
+            builder.Services.AddAuth(Options.Create(jwtOptions));
 
 			// Конфигурирование логгера.
 			Log.Logger = new LoggerConfiguration()
@@ -54,6 +60,11 @@ namespace TaskTracker.API
 			builder.Services.AddScoped<IProjectService, ProjectService>();
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<ITaskService, TaskService>();
+
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+            builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
             // Инициализатор базы данных.
             builder.Services.AddHostedService<DatabaseInitializationService>();
