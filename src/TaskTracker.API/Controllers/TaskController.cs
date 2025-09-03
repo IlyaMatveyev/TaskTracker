@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TaskTracker.Application.DTOs;
 using TaskTracker.Application.Interfaces;
 
@@ -108,14 +109,17 @@ namespace TaskTracker.API.Controllers
 		}
 
 		/// <summary>
-		/// Удалить задачу по идентификатору.
+		/// Удалить задачу по идентификатору. (Требует аутентификации.)
 		/// </summary>
 		/// <param name="taskId">Идентификатор задачи.</param>
 		/// <response code="204">Задача удалена.</response>
+		/// <response code="401">Пользователь не аутентифицирован.</response>
 		/// <response code="500">Внутренняя ошибка сервера.</response>
 		[HttpDelete("{taskId:guid}")]
+		[Authorize]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		public async Task<IActionResult> Delete([FromRoute] Guid taskId)
 		{
 			_logger.LogInformation("Обращение к методу Delete.");
